@@ -270,12 +270,64 @@ def user_create():
 
 
 def user_auth():
-    sub_root = Tk()
-    sub_root.title('Аутенитификация пользователя')
-    sub_root.geometry('500x500')
-    btn_2 = Button(sub_root, text='test')
-    btn_2.pack()
-    sub_root.mainloop()
+    sub_auth_root = Tk()
+    sub_auth_root.title('Аутенитификация пользователя')
+    sub_auth_root.geometry('500x500')
+
+    users = []
+    points = []
+
+    connection = myconnutils.get_connection()
+    sql_1 = "Select employee.fio from employee order by employee.fio;"
+    sql_2 = "Select points.name from points;"
+    try:
+        cursor = connection.cursor()
+        cursor.execute(sql_1)
+        for row in cursor:
+            print(row)
+            users.append(row[0])
+
+        cursor.execute(sql_2)
+        for row in cursor:
+            print(row)
+            points.append(row[0])
+    finally:
+        # Закрыть соединение (Close connection).
+        connection.close()
+
+    variable = StringVar(sub_auth_root)
+    variable.set(users[0])  # default value
+
+    fio_label = Label(sub_auth_root, text='Выберите пропуск который хотите приложить')
+    fio_label.pack()
+
+    w = OptionMenu(*(sub_auth_root, variable) + tuple(users, ))
+    w.pack()
+
+    point_label = Label(sub_auth_root, text='Выберите точку прохода')
+    point_label.pack()
+
+    door = IntVar(sub_auth_root)
+    # door.set(1)
+
+    door_one_radio = Radiobutton(sub_auth_root, text=points[0], variable=door, value=1)
+    door_one_radio.pack()
+
+    door_two_radio = Radiobutton(sub_auth_root, text=points[1], variable = door, value = 2)
+    door_two_radio.pack()
+
+    print(door.get())
+
+    # test stuff
+
+    def ok():
+        print("value user is", variable.get())
+        print("point is ", door.get())
+
+    button = Button(sub_auth_root, text="OK", command=ok)
+    button.pack()
+
+    sub_auth_root.mainloop()
 
 
 root = Tk()

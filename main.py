@@ -130,7 +130,7 @@ def user_update():
             for department in departments_list:
                 up_departments_listbox.insert(END, department)
 
-            up_odd_label = Label(sub_sub_root, text='Коэффициент надбавки')
+            up_odd_label = Label(sub_sub_root, text='Коэффициент должности')
             up_odds_listbox = Listbox(sub_sub_root, width=40, selectbackground='#228B22')
             for odd in odds_list:
                 up_odds_listbox.insert(END, odd)
@@ -247,7 +247,7 @@ def user_create():
     for department in departments_list:
         departments_listbox.insert(END, department)
 
-    label_odd = Label(sub_root, text='Коэффициент надбавки')
+    label_odd = Label(sub_root, text='Коэффициент должности')
     odds_listbox = Listbox(sub_root, width=40, selectbackground='#228B22')
     for odd in odds_list:
         odds_listbox.insert(END, odd)
@@ -413,8 +413,42 @@ def user_auth():
                     curs.execute(sql_ins)
                     c.commit()
                     if enter.get() == 'Вход':
-                        text = 'Доступ разрешен, сотрудник, добро пожаловать! Время прохода {0}'.format(
-                            datetime.datetime.now().time())
+                        if datetime.datetime.now().time().hour > 8:
+
+                            co = myconnutils.get_connection()
+                            sql_late = "UPDATE diploma.employee SET late_odd = late_odd - 0.05 " \
+                                       "WHERE employee.id_employee = {0};".format(current_employee[0])
+                            print(sql_late)
+                            try:
+                                pass
+                                curs = co.cursor()
+                                curs.execute(sql_late)
+                                co.commit()
+                            finally:
+                                # Закрыть соединение (Close connection).
+                                co.close()
+
+                            delta_hour = datetime.datetime.now().time().hour - 8
+                            delta_min = datetime.datetime.now().time().minute - 0
+                            text = 'Доступ разрешен, сотрудник, добро пожаловать! Время прохода {0},' \
+                                   ' выопоздали на {1} часов, {2} минут,' \
+                                   ' это негативно отразится на вашей заработной плате!'.format(
+                                datetime.datetime.now().time(),
+                                delta_hour, delta_min)
+                        else:
+                            co = myconnutils.get_connection()
+                            sql_late = "UPDATE diploma.employee SET late_odd = late_odd + 0.02 " \
+                                       "WHERE employee.id_employee = {0};".format(current_employee[0])
+                            print(sql_late)
+                            try:
+                                pass
+                                curs = co.cursor()
+                                curs.execute(sql_late)
+                                co.commit()
+                            finally:
+                                # Закрыть соединение (Close connection).
+                                co.close()
+                            text = 'Доступ разрешен, сотрудник, вы пришли вовремя, удачного рабочего дня!'
                     else:
                         text = 'Доступ разрешен, сотрудник, досвидания! Время прохода {0}'.format(
                             datetime.datetime.now().time())
@@ -448,7 +482,7 @@ def user_auth():
                     connec.close()
             else:
                 text = 'Пропуск не действителен, оставайтесь на месте до прихода администратора!'
-                messagebox.showinfo("Доступ отказан!", message=text)
+                messagebox.showerror("Доступ отказан!", message=text)
                 error_text = int(door.get())
                 email_send_back(error_text)
                 sub_auth_root.destroy()

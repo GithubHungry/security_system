@@ -1,6 +1,8 @@
 import myconnutils
+import datetime
 from tkinter import *
 from tkinter import messagebox
+import smtplib
 
 
 # connection = myconnutils.get_connection()
@@ -15,6 +17,16 @@ from tkinter import messagebox
 # finally:
 #     # Закрыть соединение (Close connection).
 #     connection.close()
+
+def email_send_back(door):
+    content = 'Несанкционированная попытка доступа но объект! Просьба проверить точку доступа № {0}'.format(
+        door).encode('utf-8')
+    mail = smtplib.SMTP('smtp.gmail.com', 587)
+    mail.ehlo()
+    mail.starttls()
+    mail.login('shopmanage7@gmail.com', 'M2t8zUmPQg')
+    mail.sendmail('shopmanage7@gmail.com', 'bardiervadim97@gmail.com', content)
+    mail.close()
 
 
 def user_update():
@@ -91,23 +103,23 @@ def user_update():
                 connection.close()
 
             up_fio_label = Label(sub_sub_root, text='Новое ФИО')
-            up_fio_entry = Entry(sub_sub_root)
+            up_fio_entry = Entry(sub_sub_root, justify=CENTER)
             up_fio_entry.insert(0, employee_info[1])
 
             up_phone_label = Label(sub_sub_root, text='Новый Телефон')
-            up_phone_entry = Entry(sub_sub_root)
+            up_phone_entry = Entry(sub_sub_root, justify=CENTER)
             up_phone_entry.insert(0, employee_info[2])
 
             up_email_label = Label(sub_sub_root, text='Новый Email')
-            up_email_entry = Entry(sub_sub_root)
+            up_email_entry = Entry(sub_sub_root, justify=CENTER)
             up_email_entry.insert(0, employee_info[3])
 
             up_date_of_birth_label = Label(sub_sub_root, text='Новая Дата рождения')
-            up_date_of_birth_entry = Entry(sub_sub_root)
+            up_date_of_birth_entry = Entry(sub_sub_root, justify=CENTER)
             up_date_of_birth_entry.insert(0, employee_info[4])
 
             up_uuid_label = Label(sub_sub_root, text='UUiD')
-            up_uuid_entry = Entry(sub_sub_root)
+            up_uuid_entry = Entry(sub_sub_root, justify=CENTER)
             up_uuid_entry.insert(0, employee_info[5])
 
             up_department_label = Label(sub_sub_root, text='Отдел')
@@ -213,19 +225,19 @@ def user_create():
     sub_root.geometry('500x700')
 
     label_fio = Label(sub_root, text='Фамилия имя отчество')
-    entry_fio = Entry(sub_root)
+    entry_fio = Entry(sub_root, justify=CENTER)
 
     label_phone = Label(sub_root, text='Телефон')
-    entry_phone = Entry(sub_root)
+    entry_phone = Entry(sub_root, justify=CENTER)
 
     label_email = Label(sub_root, text='Email')
-    entry_email = Entry(sub_root)
+    entry_email = Entry(sub_root, justify=CENTER)
 
     label_date_of_birth = Label(sub_root, text='Дата рождения')
-    entry_date_of_birth = Entry(sub_root)
+    entry_date_of_birth = Entry(sub_root, justify=CENTER)
 
     label_uuid = Label(sub_root, text='UUiD')
-    entry_uuid = Entry(sub_root)
+    entry_uuid = Entry(sub_root, justify=CENTER)
 
     label_department = Label(sub_root, text='Отдел')
     departments_listbox = Listbox(sub_root, width=40, selectbackground='#228B22', exportselection=0)
@@ -276,56 +288,178 @@ def user_auth():
 
     users = []
     points = []
+    uuids = []
+    users_uuids = []
 
     connection = myconnutils.get_connection()
-    sql_1 = "Select employee.fio from employee order by employee.fio;"
+    sql_1 = "Select employee.fio,employee.UUid from employee order by employee.fio;"
     sql_2 = "Select points.name from points;"
     try:
         cursor = connection.cursor()
         cursor.execute(sql_1)
         for row in cursor:
-            print(row)
+            users_uuids.append(row)
             users.append(row[0])
+            uuids.append(row[1])
+        users.append('-----')
+        uuids.append('af89ac97-b14b-4660-a382-93b26ddf877d')
+        uuids.append('76488e31-5707-4603-b571-7f0e1615f87c')
+        uuids.append('b5f711e3-153b-4df4-b012-ab5ca2bf2f04')
 
         cursor.execute(sql_2)
         for row in cursor:
-            print(row)
             points.append(row[0])
     finally:
         # Закрыть соединение (Close connection).
         connection.close()
 
     variable = StringVar(sub_auth_root)
-    variable.set(users[0])  # default value
+    variable.set(users[-1])  # default value
 
     fio_label = Label(sub_auth_root, text='Выберите пропуск который хотите приложить')
     fio_label.pack()
 
-    w = OptionMenu(*(sub_auth_root, variable) + tuple(users, ))
+    def setter_auth(selection):
+        variable.set(selection)
+
+    w = OptionMenu(*(sub_auth_root, variable) + tuple(users, ), command=setter_auth)
     w.pack()
 
-    point_label = Label(sub_auth_root, text='Выберите точку прохода')
-    point_label.pack()
+    def submit():
+        btn_submit.pack_forget()
+        w.pack_forget()
 
-    door = IntVar(sub_auth_root)
-    # door.set(1)
+        sub_entry = Entry(sub_auth_root, justify=CENTER, width=35)
+        sub_entry.insert(0, variable.get())
+        sub_entry.config(state=DISABLED)
+        sub_entry.pack()
 
-    door_one_radio = Radiobutton(sub_auth_root, text=points[0], variable=door, value=1)
-    door_one_radio.pack()
+        label_uuid_auth = Label(sub_auth_root, text='UUiD')
+        label_uuid_auth.pack()
+        if variable.get() == '-----':
+            entry_uuid_auth = Entry(sub_auth_root, justify=CENTER, width=35)
+            entry_uuid_auth.insert(0, 'Введите UUiD')
+            entry_uuid_auth.pack()
+        else:
+            entry_uuid_auth = Entry(sub_auth_root, justify=CENTER, width=35)
+            for tup in users_uuids:
+                if tup[0] == variable.get():
+                    entry_uuid_auth.insert(0, tup[1])
+                    entry_uuid_auth.config(state=DISABLED)
+                    entry_uuid_auth.pack()
 
-    door_two_radio = Radiobutton(sub_auth_root, text=points[1], variable = door, value = 2)
-    door_two_radio.pack()
+        point_label = Label(sub_auth_root, text='Выберите точку прохода')
+        point_label.pack()
 
-    print(door.get())
+        door = IntVar(sub_auth_root)
+        door.set(1)
+
+        door_one_radio = Radiobutton(sub_auth_root, text=points[0], variable=door, value=1)
+        door_one_radio.pack()
+
+        door_two_radio = Radiobutton(sub_auth_root, text=points[1], variable=door, value=2)
+        door_two_radio.pack()
+
+        enter_label = Label(sub_auth_root, text='Выберите тип прохода')
+        enter_label.pack()
+
+        enter = StringVar(sub_auth_root)
+        enter.set('Вход ')
+
+        enter_one_radio = Radiobutton(sub_auth_root, text='Вход', variable=enter, value='Вход')
+        enter_one_radio.pack()
+
+        enter_two_radio = Radiobutton(sub_auth_root, text='Выход', variable=enter, value='Выход')
+        enter_two_radio.pack()
+
+        def ok():
+            info = []
+            c = myconnutils.get_connection()
+            sql = "Select * from diploma.employee;"
+            try:
+                curs = c.cursor()
+                curs.execute(sql)
+                for user_row in curs:
+                    info.append(user_row)
+            finally:
+                # Закрыть соединение (Close connection).
+                c.close()
+
+            current_employee = ''
+
+            for employee in info:
+                if entry_uuid_auth.get() in employee:
+                    current_employee = employee
+                    break
+                else:
+                    current_employee = (
+                        'Неизвестно', 'Неизвестно', 'Неизвестно', 'Неизвестно', 'Неизвестно',
+                        entry_uuid_auth.get(), 'Неизвестно', 'Неизвестно', 'Неизвестно',)
+
+            print("value user is", variable.get())
+            print('uuid is ', entry_uuid_auth.get())
+            print("point is ", door.get())
+            print('enter is :', enter.get())
+            print(current_employee)
+
+            if entry_uuid_auth.get() in uuids and sub_entry.get() != '-----':
+                c = myconnutils.get_connection()
+                sql_ins = "Insert into diploma.log(entry_type,employee_id, uuid ,dep_id, point_id, reg_date)" \
+                          " values ('{0}',{1},'{2}',{3},{4},now());".format(enter.get(), current_employee[0],
+                                                                            entry_uuid_auth.get(),
+                                                                            current_employee[6], door.get())
+                try:
+                    curs = c.cursor()
+                    curs.execute(sql_ins)
+                    c.commit()
+                    if enter.get() == 'Вход':
+                        text = 'Доступ разрешен, сотрудник, добро пожаловать! Время прохода {0}'.format(
+                            datetime.datetime.now().time())
+                    else:
+                        text = 'Доступ разрешен, сотрудник, досвидания! Время прохода {0}'.format(
+                            datetime.datetime.now().time())
+                    messagebox.showinfo("Доступ разрешен!", message=text)
+                    sub_auth_root.destroy()
+
+                finally:
+                    # Закрыть соединение (Close connection).
+                    c.close()
+
+            elif entry_uuid_auth.get() in uuids and sub_entry.get() == '-----':
+                connec = myconnutils.get_connection()
+                sql_ins = "Insert into diploma.log(entry_type,employee_id, uuid ,dep_id, point_id, reg_date)" \
+                          " values ('{0}',{1},'{2}',{3},{4},now());".format(enter.get(), 0, entry_uuid_auth.get(),
+                                                                            0, door.get())
+                try:
+                    pass
+                    curs = connec.cursor()
+                    curs.execute(sql_ins)
+                    connec.commit()
+                    if enter.get() == 'Вход':
+                        text = 'Доступ разрешен, гость, добро пожаловать! Время прохода {0}'.format(
+                            datetime.datetime.now().time())
+                    else:
+                        text = 'Доступ разрешен, гость, досвидания! Время прохода {0}'.format(
+                            datetime.datetime.now().time())
+                    messagebox.showinfo("Доступ разрешен!", message=text)
+                    sub_auth_root.destroy()
+                finally:
+                    # Закрыть соединение (Close connection).
+                    connec.close()
+            else:
+                text = 'Пропуск не действителен, оставайтесь на месте до прихода администратора!'
+                messagebox.showinfo("Доступ отказан!", message=text)
+                error_text = int(door.get())
+                email_send_back(error_text)
+                sub_auth_root.destroy()
+
+        button = Button(sub_auth_root, text="OK", command=ok)
+        button.pack()
+
+    btn_submit = Button(sub_auth_root, text='Submit', command=submit)
+    btn_submit.pack()
 
     # test stuff
-
-    def ok():
-        print("value user is", variable.get())
-        print("point is ", door.get())
-
-    button = Button(sub_auth_root, text="OK", command=ok)
-    button.pack()
 
     sub_auth_root.mainloop()
 
@@ -342,5 +476,8 @@ btn_create.pack()
 
 btn_update = Button(text='Изменение данных пользователя', command=user_update)
 btn_update.pack()
+
+# btn_send = Button(text='Отправить сообщение', command=email_send)
+# btn_send.pack()
 
 root.mainloop()

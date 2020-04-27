@@ -2,21 +2,191 @@ import myconnutils
 import datetime
 from tkinter import *
 from tkinter import messagebox
+from tkinter import filedialog as fd
 import smtplib
 
+users_all_name = []
+all_users_connection = myconnutils.get_connection()
+sql = "select employee.fio from diploma.employee;"
+try:
+    cursor = all_users_connection.cursor()
+    cursor.execute(sql)
+    for row in cursor:
+        for elem in row:
+            users_all_name.append(elem)
+finally:
+    # Закрыть соединение (Close connection).
+    all_users_connection.close()
 
-# connection = myconnutils.get_connection()
-# sql = "describe Employee;"
-# try:
-#     cursor = connection.cursor()
-#     cursor.execute(sql)
-#     for row in cursor:
-#         print(row)
-#         # for elem in row:
-#         #     print(str(elem).title())
-# finally:
-#     # Закрыть соединение (Close connection).
-#     connection.close()
+
+def show_info():
+    def user_request():
+        print(show_info_entry.get())
+        if show_info_entry.get() == '' or show_info_entry.get() not in users_all_name:
+
+            user_info_error_root = Tk()
+            user_info_error_root.title('Ошибка пользователя')
+            user_info_error_root.geometry('350x150')
+
+            find_info_label = Label(user_info_error_root, text='Пользователя с данным именем не существует!')
+            find_info_btn = Button(user_info_error_root, text='OK', command=user_info_error_root.destroy)
+            find_info_label.pack()
+            find_info_btn.pack()
+
+            user_info_error_root.mainloop()
+
+        else:
+            current_employee_info = ''
+            db_info_connection = myconnutils.get_connection()
+            sql_find_info = "Select employee.fio, employee.phone, employee.email, employee.date_of_birth," \
+                            " employee.uuid, employee.entry_check, employee.reg_date, employee.late_odd ," \
+                            " department.name, department.salary_value, odds.name, odds.odd_value" \
+                            " from employee inner join department on employee.department_code = department.id_dep " \
+                            "inner join odds on employee.odd_code=odds.id_odd  " \
+                            "where employee.fio ='{0}';".format(show_info_entry.get())
+            try:
+                db_info_cursor = db_info_connection.cursor()
+                db_info_cursor.execute(sql_find_info)
+                for db_info_row in db_info_cursor:
+                    current_employee_info = db_info_row
+            finally:
+                # Закрыть соединение (Close connection).
+                db_info_connection.close()
+                print(current_employee_info)
+
+            ####
+
+            def save_file():
+                file_name = fd.asksaveasfilename(filetypes=(("TXT files", "*.txt"),
+                                                            ("HTML files", "*.html;*.htm"),
+                                                            ("All files", "*.*")))
+                f = open(file_name, 'w')
+                s = 'я русский текст'  #  Написать csv форму для одного пользователя
+                f.write(s)
+                f.close()
+
+            show_info_label.forget()
+            show_info_entry.forget()
+            show_info_btn.forget()
+
+            info_user_fio_label = Label(user_info_root, text='ФИО')
+            info_user_fio_label.pack()
+
+            info_user_fio_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_fio_entry.insert(0, current_employee_info[0])
+            info_user_fio_entry.config(state=DISABLED)
+            info_user_fio_entry.pack()
+
+            info_user_phone_label = Label(user_info_root, text='Телефон')
+            info_user_phone_label.pack()
+
+            info_user_phone_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_phone_entry.insert(0, current_employee_info[1])
+            info_user_phone_entry.config(state=DISABLED)
+            info_user_phone_entry.pack()
+
+            info_user_email_label = Label(user_info_root, text='Email')
+            info_user_email_label.pack()
+
+            info_user_email_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_email_entry.insert(0, current_employee_info[2])
+            info_user_email_entry.config(state=DISABLED)
+            info_user_email_entry.pack()
+
+            info_user_date_of_birth_label = Label(user_info_root, text='Дата рождения')
+            info_user_date_of_birth_label.pack()
+
+            info_user_date_of_birth_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_date_of_birth_entry.insert(0, current_employee_info[3])
+            info_user_date_of_birth_entry.config(state=DISABLED)
+            info_user_date_of_birth_entry.pack()
+
+            info_user_uuid_label = Label(user_info_root, text='UUiD')
+            info_user_uuid_label.pack()
+
+            info_user_uuid_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_uuid_entry.insert(0, current_employee_info[4])
+            info_user_uuid_entry.config(state=DISABLED)
+            info_user_uuid_entry.pack()
+
+            info_user_entry_check_label = Label(user_info_root, text='Статус нахождения на объекте в данный момент')
+            info_user_entry_check_label.pack()
+
+            info_user_entry_check_entry = Entry(user_info_root, justify=CENTER, width=40)
+            if current_employee_info[5] == 0:
+                info_user_entry_check_entry.insert(0, 'Отсутствует')
+            else:
+                info_user_entry_check_entry.insert(0, 'На рабочем месте')
+            info_user_entry_check_entry.config(state=DISABLED)
+            info_user_entry_check_entry.pack()
+
+            info_user_late_odd_label = Label(user_info_root, text='Коэффициент пунктуальности')
+            info_user_late_odd_label.pack()
+
+            info_user_late_odd_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_late_odd_entry.insert(0, current_employee_info[7])
+            info_user_late_odd_entry.config(state=DISABLED)
+            info_user_late_odd_entry.pack()
+
+            info_user_department_name_label = Label(user_info_root, text='Отдел')
+            info_user_department_name_label.pack()
+
+            info_user_department_name_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_department_name_entry.insert(0, current_employee_info[8])
+            info_user_department_name_entry.config(state=DISABLED)
+            info_user_department_name_entry.pack()
+
+            info_user_department_salary_label = Label(user_info_root, text='Базовая заработная плата по отделу')
+            info_user_department_salary_label.pack()
+
+            info_user_department_salary_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_department_salary_entry.insert(0, current_employee_info[9])
+            info_user_department_salary_entry.config(state=DISABLED)
+            info_user_department_salary_entry.pack()
+
+            info_user_odd_name_label = Label(user_info_root, text='Должность')
+            info_user_odd_name_label.pack()
+
+            info_user_odd_name_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_odd_name_entry.insert(0, current_employee_info[10])
+            info_user_odd_name_entry.config(state=DISABLED)
+            info_user_odd_name_entry.pack()
+
+            info_user_odd_value_label = Label(user_info_root, text='Надбавка за должность')
+            info_user_odd_value_label.pack()
+
+            info_user_odd_value_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_odd_value_entry.insert(0, current_employee_info[11])
+            info_user_odd_value_entry.config(state=DISABLED)
+            info_user_odd_value_entry.pack()
+
+            info_user_reg_date_label = Label(user_info_root, text='Дата принятия на работу')
+            info_user_reg_date_label.pack()
+
+            info_user_reg_date_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_reg_date_entry.insert(0, current_employee_info[6])
+            info_user_reg_date_entry.config(state=DISABLED)
+            info_user_reg_date_entry.pack()
+
+            info_user_save_btn = Button(user_info_root, text='Сохранить', command=save_file)
+            info_user_save_btn.pack()
+
+            ####
+
+    user_info_root = Tk()
+    user_info_root.title('Информация о пользователе')
+    user_info_root.geometry('500x700')
+
+    show_info_label = Label(user_info_root, text='Введите ФИО пользователя')
+    show_info_entry = Entry(user_info_root)
+    show_info_btn = Button(user_info_root, text='Поиск пользователя', command=user_request)
+
+    show_info_label.pack()
+    show_info_entry.pack()
+    show_info_btn.pack()
+
+    user_info_root.mainloop()
+
 
 def email_send_back(door):
     content = 'Несанкционированная попытка доступа но объект! Просьба проверить точку доступа № {0}'.format(
@@ -62,12 +232,12 @@ def user_update():
 
         user_fio = update_entry.get()
 
-        if user_fio == '':
+        if user_fio == '' or user_fio not in users_all_name:
             sub_sub_root = Tk()
             sub_sub_root.title('Ошибка пользователя')
-            sub_sub_root.geometry('200x200')
+            sub_sub_root.geometry('350x150')
 
-            up_label = Label(sub_sub_root, text='Введите корректное ФИО')
+            up_label = Label(sub_sub_root, text='Пользователя с именем {0} не существует!'.format(user_fio))
             up_btn = Button(sub_sub_root, text='OK', command=sub_sub_root.destroy)
             up_label.pack()
             up_btn.pack()
@@ -475,8 +645,8 @@ def user_auth():
                             text = 'Доступ разрешен, сотрудник, добро пожаловать! Время прохода {0},' \
                                    ' вы опоздали на {1} часов, {2} минут,' \
                                    ' это негативно отразится на вашей заработной плате!'.format(
-                                    datetime.datetime.now().time(),
-                                    delta_hour, delta_min)
+                                datetime.datetime.now().time(),
+                                delta_hour, delta_min)
                         else:
                             co = myconnutils.get_connection()
                             sql_late = "UPDATE diploma.employee SET late_odd = late_odd + 0.02 " \
@@ -551,7 +721,7 @@ btn_create.pack()
 btn_update = Button(text='Изменение данных пользователя', command=user_update)
 btn_update.pack()
 
-# btn_send = Button(text='Отправить сообщение', command=email_send)
-# btn_send.pack()
+btn_send = Button(text='Информация о пользователе', command=show_info)
+btn_send.pack()
 
 root.mainloop()

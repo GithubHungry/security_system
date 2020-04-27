@@ -394,13 +394,55 @@ def user_auth():
                 else:
                     current_employee = (
                         'Неизвестно', 'Неизвестно', 'Неизвестно', 'Неизвестно', 'Неизвестно',
-                        entry_uuid_auth.get(), 'Неизвестно', 'Неизвестно', 'Неизвестно',)
+                        entry_uuid_auth.get(), 'Неизвестно', 'Неизвестно', 'Неизвестно', 0)
 
             print("value user is", variable.get())
             print('uuid is ', entry_uuid_auth.get())
             print("point is ", door.get())
             print('enter is :', enter.get())
             print(current_employee)
+
+            ##########################
+
+            # Вход
+            if current_employee[9] + 1 > 1 and current_employee[0] != 'Неизвестно' and enter.get() == 'Вход':  ########
+                text = 'Пользователь с данным пропуском уже вошел!'
+                messagebox.showerror("Доступ отказан!", message=text)
+                sub_auth_root.destroy()
+            elif variable.get() != '-----' and current_employee[9] + 1 < 2 and current_employee[0] != 'Неизвестно' \
+                    and enter.get() == 'Вход':
+                db_conn = myconnutils.get_connection()
+                sql_entry_check = "update diploma.employee set entry_check = entry_check + 1 " \
+                                  "where employee.fio='{0}';".format(variable.get())
+                print(sql_entry_check)
+                try:
+                    db_curs = db_conn.cursor()
+                    db_curs.execute(sql_entry_check)
+                    db_conn.commit()
+                finally:
+                    # Закрыть соединение (Close connection).
+                    db_conn.close()
+
+            ##########################
+            # Выход
+            if enter.get() == 'Выход' and current_employee[0] != 'Неизвестно' and current_employee[9] - 1 < 0:
+                text = 'Пользователь с данным пропуском уже вышел!'
+                messagebox.showerror("Доступ отказан!", message=text)
+                sub_auth_root.destroy()
+            elif enter.get() == 'Выход' and variable.get() != '-----' and current_employee[9] - 1 == 0:
+                db_conn = myconnutils.get_connection()
+                sql_entry_check = "update diploma.employee set entry_check = entry_check - 1 " \
+                                  "where employee.fio='{0}';".format(variable.get())
+                print(sql_entry_check)
+                try:
+                    db_curs = db_conn.cursor()
+                    db_curs.execute(sql_entry_check)
+                    db_conn.commit()
+                finally:
+                    # Закрыть соединение (Close connection).
+                    db_conn.close()
+
+            ##########################
 
             if entry_uuid_auth.get() in uuids and sub_entry.get() != '-----':
                 c = myconnutils.get_connection()
@@ -431,17 +473,16 @@ def user_auth():
                             delta_hour = datetime.datetime.now().time().hour - 8
                             delta_min = datetime.datetime.now().time().minute - 0
                             text = 'Доступ разрешен, сотрудник, добро пожаловать! Время прохода {0},' \
-                                   ' выопоздали на {1} часов, {2} минут,' \
+                                   ' вы опоздали на {1} часов, {2} минут,' \
                                    ' это негативно отразится на вашей заработной плате!'.format(
-                                datetime.datetime.now().time(),
-                                delta_hour, delta_min)
+                                    datetime.datetime.now().time(),
+                                    delta_hour, delta_min)
                         else:
                             co = myconnutils.get_connection()
                             sql_late = "UPDATE diploma.employee SET late_odd = late_odd + 0.02 " \
                                        "WHERE employee.id_employee = {0};".format(current_employee[0])
                             print(sql_late)
                             try:
-                                pass
                                 curs = co.cursor()
                                 curs.execute(sql_late)
                                 co.commit()
@@ -465,7 +506,6 @@ def user_auth():
                           " values ('{0}',{1},'{2}',{3},{4},now());".format(enter.get(), 0, entry_uuid_auth.get(),
                                                                             0, door.get())
                 try:
-                    pass
                     curs = connec.cursor()
                     curs.execute(sql_ins)
                     connec.commit()

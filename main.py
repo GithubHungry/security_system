@@ -3,6 +3,7 @@ import datetime
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog as fd
+from tkinter import ttk
 from openpyxl.styles import Alignment
 from openpyxl import Workbook
 import smtplib
@@ -22,9 +23,129 @@ finally:
 
 
 def show_all_info():
+    def save_as():
+        file_name = fd.asksaveasfilename(filetypes=(("EXCEL files", "*.xlsx"),
+                                                    ("TXT files", "*.txt"),
+                                                    ("HTML files", "*.html;*.htm"),
+                                                    ("All files", "*.*"),), defaultextension='.xlsx')
+        wb = Workbook()
+        sheet = wb.active
+        sheet.title = 'User_info'
+
+        row_excel = 1
+        sheet['A' + str(row_excel)] = 'ФИО'
+        sheet['B' + str(row_excel)] = 'Телефон'
+        sheet['C' + str(row_excel)] = 'Email'
+        sheet['D' + str(row_excel)] = 'Дата рождения'
+        sheet['E' + str(row_excel)] = 'UUiD'
+        sheet['F' + str(row_excel)] = 'Статус нахождения на объекте в данный момент'
+        sheet['G' + str(row_excel)] = 'Коэффициент пунктуальности'
+        sheet['H' + str(row_excel)] = 'Отдел'
+        sheet['I' + str(row_excel)] = 'Базовая заработная плата по отделу'
+        sheet['J' + str(row_excel)] = 'Должность'
+        sheet['K' + str(row_excel)] = 'Надбавка за должность'
+        sheet['L' + str(row_excel)] = 'Дата принятия на работу'
+
+        for i, user in enumerate(all_users_info):
+            sheet['A' + str(i + 2)] = user[0]
+            sheet['B' + str(i + 2)] = user[1]
+            sheet['C' + str(i + 2)] = user[2]
+            sheet['D' + str(i + 2)] = user[3]
+            sheet['E' + str(i + 2)] = user[4]
+            sheet['F' + str(i + 2)] = user[5]
+            sheet['G' + str(i + 2)] = user[6]
+            sheet['H' + str(i + 2)] = user[7]
+            sheet['I' + str(i + 2)] = user[8]
+            sheet['J' + str(i + 2)] = user[9]
+            sheet['K' + str(i + 2)] = user[10]
+            sheet['L' + str(i + 2)] = user[11]
+
+        sheet.column_dimensions['A'].width = 30
+        sheet.column_dimensions['B'].width = 18
+        sheet.column_dimensions['C'].width = 25
+        sheet.column_dimensions['D'].width = 15
+        sheet.column_dimensions['E'].width = 36
+        sheet.column_dimensions['F'].width = 45
+        sheet.column_dimensions['G'].width = 28
+        sheet.column_dimensions['H'].width = 20
+        sheet.column_dimensions['I'].width = 36
+        sheet.column_dimensions['J'].width = 20
+        sheet.column_dimensions['K'].width = 25
+        sheet.column_dimensions['L'].width = 25
+
+        sheet['A' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['B' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['C' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['D' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['E' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['F' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['G' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['H' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['I' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['J' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['K' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['L' + str(row_excel)].alignment = Alignment(horizontal='center')
+
+        wb.save(file_name)
+
+    all_users_info = []
+    all_users_info_connection = myconnutils.get_connection()
+    sql_all_info = "Select employee.fio, employee.phone, employee.email, employee.date_of_birth," \
+                   " employee.uuid, employee.entry_check, employee.late_odd ," \
+                   "department.name, department.salary_value, odds.name, odds.odd_value, employee.reg_date" \
+                   " from employee inner join department on employee.department_code = department.id_dep " \
+                   "inner join odds on employee.odd_code=odds.id_odd ;"
+    try:
+        all_user_info_cursor = all_users_info_connection.cursor()
+        all_user_info_cursor.execute(sql_all_info)
+        for all_users_info_row in all_user_info_cursor:
+            all_users_info.append(all_users_info_row)
+    finally:
+        # Закрыть соединение (Close connection).
+        all_users_info_connection.close()
+
     all_root = Tk()
     all_root.title("Все пользователи")
-    all_root.geometry("500x500")
+    all_root.geometry("1600x400")
+
+    tree = ttk.Treeview(all_root, columns=('ФИО', 'Телефон', 'Email', 'Дата рождения', 'UUiD',
+                                           'Статус',
+                                           'Коэффициент пунктуальности', 'Отдел', 'Базовая з/п'
+                                           , 'Должность', 'Надбавка за должность', 'Дата принятия на работу',),
+
+                        height=15, show='headings')
+    tree.column('ФИО', width=200, anchor=CENTER)
+    tree.column('Телефон', width=100, anchor=CENTER)
+    tree.column('Email', width=170, anchor=CENTER)
+    tree.column('Дата рождения', width=90, anchor=CENTER)
+    tree.column('UUiD', width=220, anchor=CENTER)
+    tree.column('Статус', width=50, anchor=CENTER)
+    tree.column('Коэффициент пунктуальности', width=190, anchor=CENTER)
+    tree.column('Отдел', width=150, anchor=CENTER)
+    tree.column('Базовая з/п', width=90, anchor=CENTER)
+    tree.column('Должность', width=130, anchor=CENTER)
+    tree.column('Надбавка за должность', width=60, anchor=CENTER)
+    tree.column('Дата принятия на работу', width=150, anchor=CENTER)
+
+    tree.heading('ФИО', text='ФИО')
+    tree.heading('Телефон', text='Телефон')
+    tree.heading('Email', text='Email')
+    tree.heading('Дата рождения', text='Дата рождения')
+    tree.heading('UUiD', text='UUiD')
+    tree.heading('Статус', text='Статус')
+    tree.heading('Коэффициент пунктуальности', text='Коэффициент пунктуальности')
+    tree.heading('Отдел', text='Отдел')
+    tree.heading('Базовая з/п', text='Базовая з/п')
+    tree.heading('Должность', text='Должность')
+    tree.heading('Надбавка за должность', text='Надбавка за должность')
+    tree.heading('Дата принятия на работу', text='Дата принятия на работу')
+
+    for employee_one in all_users_info:
+        tree.insert('', 'end', values=employee_one)
+
+    tree.pack()
+    save_as_btn = Button(all_root, text='Сохранить', command=save_as)
+    save_as_btn.pack()
 
     all_root.mainloop()
 
@@ -801,7 +922,7 @@ btn_update.pack()
 btn_send = Button(text='Информация о пользователе', command=show_info)
 btn_send.pack()
 
-btn_all_users = Button(text='Информация о всех пользователе', command=show_all_info)
+btn_all_users = Button(text='Информация о всех пользователях', command=show_all_info)
 btn_all_users.pack()
 
 root.mainloop()

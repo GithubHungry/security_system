@@ -3,6 +3,8 @@ import datetime
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog as fd
+from openpyxl.styles import Alignment
+from openpyxl import Workbook
 import smtplib
 
 users_all_name = []
@@ -19,9 +21,16 @@ finally:
     all_users_connection.close()
 
 
+def show_all_info():
+    all_root = Tk()
+    all_root.title("Все пользователи")
+    all_root.geometry("500x500")
+
+    all_root.mainloop()
+
+
 def show_info():
     def user_request():
-        print(show_info_entry.get())
         if show_info_entry.get() == '' or show_info_entry.get() not in users_all_name:
 
             user_info_error_root = Tk()
@@ -52,18 +61,88 @@ def show_info():
             finally:
                 # Закрыть соединение (Close connection).
                 db_info_connection.close()
-                print(current_employee_info)
-
-            ####
 
             def save_file():
-                file_name = fd.asksaveasfilename(filetypes=(("TXT files", "*.txt"),
+                file_name = fd.asksaveasfilename(filetypes=(("EXCEL files", "*.xlsx"),
+                                                            ("TXT files", "*.txt"),
                                                             ("HTML files", "*.html;*.htm"),
-                                                            ("All files", "*.*")))
-                f = open(file_name, 'w')
-                s = 'я русский текст'  #  Написать csv форму для одного пользователя
-                f.write(s)
-                f.close()
+                                                            ("All files", "*.*"),), defaultextension='.xlsx')
+                wb = Workbook()
+                sheet = wb.active
+                sheet.title = 'User_info'
+
+                row_excel = 1
+                sheet['A' + str(row_excel)] = 'ФИО'
+                sheet['B' + str(row_excel)] = 'Телефон'
+                sheet['C' + str(row_excel)] = 'Email'
+                sheet['D' + str(row_excel)] = 'Дата рождения'
+                sheet['E' + str(row_excel)] = 'UUiD'
+                sheet['F' + str(row_excel)] = 'Статус нахождения на объекте в данный момент'
+                sheet['G' + str(row_excel)] = 'Коэффициент пунктуальности'
+                sheet['H' + str(row_excel)] = 'Отдел'
+                sheet['I' + str(row_excel)] = 'Базовая заработная плата по отделу'
+                sheet['J' + str(row_excel)] = 'Должность'
+                sheet['K' + str(row_excel)] = 'Надбавка за должность'
+                sheet['L' + str(row_excel)] = 'Дата принятия на работу'
+
+                sheet['A' + str(2)] = current_employee_info[0]
+                sheet['B' + str(2)] = current_employee_info[1]
+                sheet['C' + str(2)] = current_employee_info[2]
+                sheet['D' + str(2)] = current_employee_info[3]
+                sheet['E' + str(2)] = current_employee_info[4]
+
+                if current_employee_info[5] == 0:
+                    sheet['F' + str(2)] = 'Присутствует'
+                else:
+                    sheet['F' + str(2)] = 'Отсутствует'
+
+                sheet['G' + str(2)] = current_employee_info[7]
+                sheet['H' + str(2)] = current_employee_info[8]
+                sheet['I' + str(2)] = current_employee_info[9]
+                sheet['J' + str(2)] = current_employee_info[10]
+                sheet['K' + str(2)] = current_employee_info[11]
+                sheet['L' + str(2)] = current_employee_info[6]
+
+                sheet.column_dimensions['A'].width = 30
+                sheet.column_dimensions['B'].width = 18
+                sheet.column_dimensions['C'].width = 25
+                sheet.column_dimensions['D'].width = 15
+                sheet.column_dimensions['E'].width = 36
+                sheet.column_dimensions['F'].width = 45
+                sheet.column_dimensions['G'].width = 28
+                sheet.column_dimensions['H'].width = 20
+                sheet.column_dimensions['I'].width = 36
+                sheet.column_dimensions['J'].width = 20
+                sheet.column_dimensions['K'].width = 25
+                sheet.column_dimensions['L'].width = 25
+
+                sheet['A' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['B' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['C' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['D' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['E' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['F' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['G' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['H' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['I' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['J' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['K' + str(row_excel)].alignment = Alignment(horizontal='center')
+                sheet['L' + str(row_excel)].alignment = Alignment(horizontal='center')
+
+                sheet['A' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['B' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['C' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['D' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['E' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['F' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['G' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['H' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['I' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['J' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['K' + str(2)].alignment = Alignment(horizontal='center')
+                sheet['L' + str(2)].alignment = Alignment(horizontal='center')
+
+                wb.save(file_name)
 
             show_info_label.forget()
             show_info_entry.forget()
@@ -170,8 +249,6 @@ def show_info():
 
             info_user_save_btn = Button(user_info_root, text='Сохранить', command=save_file)
             info_user_save_btn.pack()
-
-            ####
 
     user_info_root = Tk()
     user_info_root.title('Информация о пользователе')
@@ -723,5 +800,8 @@ btn_update.pack()
 
 btn_send = Button(text='Информация о пользователе', command=show_info)
 btn_send.pack()
+
+btn_all_users = Button(text='Информация о всех пользователе', command=show_all_info)
+btn_all_users.pack()
 
 root.mainloop()

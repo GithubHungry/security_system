@@ -7,6 +7,9 @@ from tkinter import ttk
 from openpyxl.styles import Alignment
 from openpyxl import Workbook
 import smtplib
+import numpy as np
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+import matplotlib.pyplot as plt
 
 users_all_name = []
 all_users_connection = myconnutils.get_connection()
@@ -20,6 +23,76 @@ try:
 finally:
     # Закрыть соединение (Close connection).
     all_users_connection.close()
+
+
+def show_graphic_1():
+    line_graph_root = Tk()
+    line_graph_root.wm_title('Title')
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.set(xlim=[0, 31], ylim=[0, 100], title='Количество посетителей', xlabel='Дни', ylabel='Количество посетителей')
+    ax.plot(
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+         31],
+        [15, 16, 18, 14, 16, 10, 8, 22, 16, 26, 15, 28, 6, 12, 28, 20, 23, 18, 20, 5, 9, 20, 22, 24,
+         25, 13, 2, 8, 23, 20, 21],
+        color='green', linewidth=2)
+
+    # plt.show()
+
+    canvas = FigureCanvasTkAgg(fig, master=line_graph_root)
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+
+    toolbar = NavigationToolbar2Tk(canvas, line_graph_root)
+    toolbar.update()
+    canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+
+    line_graph_root.mainloop()
+
+
+def show_diagram_2():
+    diagram_2_info = []
+    diagram_connection = myconnutils.get_connection()
+    diagram_sql = "Select log.point_id,count(log.id_log) from diploma.log group by log.point_id;"
+    try:
+        diagram_cursor = diagram_connection.cursor()
+        diagram_cursor.execute(diagram_sql)
+        for diagram_row in diagram_cursor:
+            diagram_2_info.append(diagram_row)
+
+    finally:
+        # Закрыть соединение (Close connection).
+        diagram_connection.close()
+
+    diagram_root = Tk()
+    diagram_root.wm_title('Нагрузка на точки входа')
+
+    nums = []
+
+    for num in diagram_2_info:
+        nums.append(num[1])
+
+    labels = 'Главный вход', 'Запасной вход'
+
+    sizes = [nums[0], nums[1]]
+    explode = (0, 0.1)  # only "explode" the 2nd slice (i.e. 'Запасной вход')
+
+    fig1, ax1 = plt.subplots()
+    ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
+            shadow=True, startangle=90)
+    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+    canvas = FigureCanvasTkAgg(fig1, master=diagram_root)
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+
+    toolbar = NavigationToolbar2Tk(canvas, diagram_root)
+    toolbar.update()
+    canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+
+    diagram_root.mainloop()
 
 
 def btn_show_log():
@@ -338,6 +411,55 @@ def show_info():
                 # Закрыть соединение (Close connection).
                 db_info_connection.close()
 
+            #######################
+            # User graphic
+            #######################
+            def show_graphic_1():
+                graph_list = []
+                line_graph_connection = myconnutils.get_connection()
+                line_graph_sql = "select log.id_log,log.reg_date, log.entry_type from diploma.log " \
+                                 "inner join diploma.employee on log.employee_id = employee.id_employee" \
+                                 " where employee.fio='{0}';".format(current_employee_info[0])
+                try:
+                    line_graph_cursor = line_graph_connection.cursor()
+                    line_graph_cursor.execute(line_graph_sql)
+                    for line_graph_row in line_graph_cursor:
+                        graph_list.append(line_graph_row)
+                finally:
+                    # Закрыть соединение (Close connection).
+                    line_graph_connection.close()
+
+                line_graph_root = Tk()
+                line_graph_root.wm_title('Title')
+
+                x = np.arange(1, 31)
+                y = np.random.randint(6, 10, size=30)
+
+                fig, ax = plt.subplots()
+
+                ax.bar(x, y)
+
+                ax.set_facecolor('seashell')
+                fig.set_facecolor('floralwhite')
+                fig.set_figwidth(12)  # ширина Figure
+                fig.set_figheight(6)  # высота Figure
+
+                plt.show()
+
+                canvas = FigureCanvasTkAgg(fig, master=line_graph_root)
+                canvas.draw()
+                canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+
+                toolbar = NavigationToolbar2Tk(canvas, line_graph_root)
+                toolbar.update()
+                canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+
+                line_graph_root.mainloop()
+
+            #######################
+            # User graphic
+            #######################
+
             def save_file():
                 file_name = fd.asksaveasfilename(filetypes=(("EXCEL files", "*.xlsx"),
                                                             ("TXT files", "*.txt"),
@@ -525,6 +647,9 @@ def show_info():
 
             info_user_save_btn = Button(user_info_root, text='Сохранить', command=save_file)
             info_user_save_btn.pack()
+
+            info_graphic_user_btn = Button(user_info_root, text='График посещения', command=show_graphic_1)
+            info_graphic_user_btn.pack()
 
     user_info_root = Tk()
     user_info_root.title('Информация о пользователе')
@@ -919,16 +1044,8 @@ def user_auth():
                         'Неизвестно', 'Неизвестно', 'Неизвестно', 'Неизвестно', 'Неизвестно',
                         entry_uuid_auth.get(), 'Неизвестно', 'Неизвестно', 'Неизвестно', 0)
 
-            print("value user is", variable.get())
-            print('uuid is ', entry_uuid_auth.get())
-            print("point is ", door.get())
-            print('enter is :', enter.get())
-            print(current_employee)
-
-            ##########################
-
             # Вход
-            if current_employee[9] + 1 > 1 and current_employee[0] != 'Неизвестно' and enter.get() == 'Вход':  ########
+            if current_employee[9] + 1 > 1 and current_employee[0] != 'Неизвестно' and enter.get() == 'Вход':
                 text = 'Пользователь с данным пропуском уже вошел!'
                 messagebox.showerror("Доступ отказан!", message=text)
                 sub_auth_root.destroy()
@@ -937,7 +1054,6 @@ def user_auth():
                 db_conn = myconnutils.get_connection()
                 sql_entry_check = "update diploma.employee set entry_check = entry_check + 1 " \
                                   "where employee.fio='{0}';".format(variable.get())
-                print(sql_entry_check)
                 try:
                     db_curs = db_conn.cursor()
                     db_curs.execute(sql_entry_check)
@@ -956,7 +1072,6 @@ def user_auth():
                 db_conn = myconnutils.get_connection()
                 sql_entry_check = "update diploma.employee set entry_check = entry_check - 1 " \
                                   "where employee.fio='{0}';".format(variable.get())
-                print(sql_entry_check)
                 try:
                     db_curs = db_conn.cursor()
                     db_curs.execute(sql_entry_check)
@@ -983,7 +1098,6 @@ def user_auth():
                             co = myconnutils.get_connection()
                             sql_late = "UPDATE diploma.employee SET late_odd = late_odd - 0.05 " \
                                        "WHERE employee.id_employee = {0};".format(current_employee[0])
-                            print(sql_late)
                             try:
                                 pass
                                 curs = co.cursor()
@@ -1004,7 +1118,6 @@ def user_auth():
                             co = myconnutils.get_connection()
                             sql_late = "UPDATE diploma.employee SET late_odd = late_odd + 0.02 " \
                                        "WHERE employee.id_employee = {0};".format(current_employee[0])
-                            print(sql_late)
                             try:
                                 curs = co.cursor()
                                 curs.execute(sql_late)
@@ -1082,5 +1195,11 @@ btn_all_users.pack()
 
 btn_show_log = Button(text='Просмотр журнала', command=btn_show_log)
 btn_show_log.pack()
+
+btn_show_graphic_1 = Button(text='Show graphic 1', command=show_graphic_1)
+btn_show_graphic_1.pack()
+
+btn_show_diagram_2 = Button(text='Show diagram 2', command=show_diagram_2)
+btn_show_diagram_2.pack()
 
 root.mainloop()

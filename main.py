@@ -22,6 +22,161 @@ finally:
     all_users_connection.close()
 
 
+def btn_show_log():
+    def save_log_as(log_table):
+        file_name = fd.asksaveasfilename(filetypes=(("EXCEL files", "*.xlsx"),
+                                                    ("TXT files", "*.txt"),
+                                                    ("HTML files", "*.html;*.htm"),
+                                                    ("All files", "*.*"),), defaultextension='.xlsx')
+        wb = Workbook()
+        sheet = wb.active
+        sheet.title = 'Log_info'
+
+        row_excel = 1
+        sheet['A' + str(row_excel)] = 'Событие'
+        sheet['B' + str(row_excel)] = 'ФИО'
+        sheet['C' + str(row_excel)] = 'UUiD'
+        sheet['D' + str(row_excel)] = 'Отдел'
+        sheet['E' + str(row_excel)] = 'Точка прохода'
+        sheet['F' + str(row_excel)] = 'Время события'
+
+        for i, log in enumerate(log_table):
+            sheet['A' + str(i + 2)] = log[0]
+            sheet['B' + str(i + 2)] = log[1]
+            sheet['C' + str(i + 2)] = log[2]
+            sheet['D' + str(i + 2)] = log[3]
+            sheet['E' + str(i + 2)] = log[4]
+            sheet['F' + str(i + 2)] = log[5]
+
+        sheet.column_dimensions['A'].width = 10
+        sheet.column_dimensions['B'].width = 30
+        sheet.column_dimensions['C'].width = 35
+        sheet.column_dimensions['D'].width = 30
+        sheet.column_dimensions['E'].width = 20
+        sheet.column_dimensions['F'].width = 20
+
+        sheet['A' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['B' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['C' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['D' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['E' + str(row_excel)].alignment = Alignment(horizontal='center')
+        sheet['F' + str(row_excel)].alignment = Alignment(horizontal='center')
+
+        wb.save(file_name)
+
+    def month_select():
+        log_root.destroy()
+        sql_log = "Select log.entry_type,employee.fio,employee.UUid,department.name,points.name,log.reg_date " \
+                  "from diploma.log inner join diploma.employee on log.employee_id =employee.id_employee " \
+                  "inner join department on employee.department_code =department.id_dep " \
+                  "inner join points on log.point_id=points.id_point " \
+                  "where log.reg_date>CURRENT_TIMESTAMP - INTERVAL 30 DAY;"
+        sub_log_root = Tk()
+        sub_log_root.title('Журнал событий')
+        sub_log_root.geometry('1000x500')
+
+        log_table = []
+        log_table_connection = myconnutils.get_connection()
+        try:
+            log_table_cursor = log_table_connection.cursor()
+            log_table_cursor.execute(sql_log)
+            for log_table_row in log_table_cursor:
+                log_table.append(log_table_row)
+        finally:
+            # Закрыть соединение (Close connection).
+            log_table_connection.close()
+
+        log_tree = ttk.Treeview(sub_log_root,
+                                columns=('Событие', 'ФИО', 'UUiD', 'Отдел', 'Точка прохода', 'Время события',),
+                                height=20, show='headings')
+        log_tree.column('Событие', width=100, anchor=CENTER)
+        log_tree.column('ФИО', width=200, anchor=CENTER)
+        log_tree.column('UUiD', width=225, anchor=CENTER)
+        log_tree.column('Отдел', width=150, anchor=CENTER)
+        log_tree.column('Точка прохода', width=100, anchor=CENTER)
+        log_tree.column('Время события', width=150, anchor=CENTER)
+
+        log_tree.heading('Событие', text='Событие')
+        log_tree.heading('ФИО', text='ФИО')
+        log_tree.heading('UUiD', text='UUiD')
+        log_tree.heading('Отдел', text='Отдел')
+        log_tree.heading('Точка прохода', text='Точка прохода')
+        log_tree.heading('Время события', text='Время события')
+
+        for log in log_table:
+            log_tree.insert('', 'end', values=log)
+
+        log_tree.pack()
+
+        save_log_as_btn = Button(sub_log_root, text='Сохранить', command=lambda: save_log_as(log_table))
+        save_log_as_btn.pack()
+
+        sub_log_root.mainloop()
+
+    def year_select():
+        log_root.destroy()
+        sql_log = "Select log.entry_type,employee.fio,employee.UUid,department.name,points.name,log.reg_date " \
+                  "from diploma.log inner join diploma.employee on log.employee_id =employee.id_employee " \
+                  "inner join department on employee.department_code =department.id_dep " \
+                  "inner join points on log.point_id=points.id_point;"
+
+        sub_log_root = Tk()
+        sub_log_root.title('Журнал событий')
+        sub_log_root.geometry('1000x500')
+
+        log_table = []
+        log_table_connection = myconnutils.get_connection()
+        try:
+            log_table_cursor = log_table_connection.cursor()
+            log_table_cursor.execute(sql_log)
+            for log_table_row in log_table_cursor:
+                log_table.append(log_table_row)
+        finally:
+            # Закрыть соединение (Close connection).
+            log_table_connection.close()
+
+        log_tree = ttk.Treeview(sub_log_root,
+                                columns=('Событие', 'ФИО', 'UUiD', 'Отдел', 'Точка прохода', 'Время события',),
+                                height=20, show='headings')
+        log_tree.column('Событие', width=100, anchor=CENTER)
+        log_tree.column('ФИО', width=200, anchor=CENTER)
+        log_tree.column('UUiD', width=225, anchor=CENTER)
+        log_tree.column('Отдел', width=150, anchor=CENTER)
+        log_tree.column('Точка прохода', width=100, anchor=CENTER)
+        log_tree.column('Время события', width=150, anchor=CENTER)
+
+        log_tree.heading('Событие', text='Событие')
+        log_tree.heading('ФИО', text='ФИО')
+        log_tree.heading('UUiD', text='UUiD')
+        log_tree.heading('Отдел', text='Отдел')
+        log_tree.heading('Точка прохода', text='Точка прохода')
+        log_tree.heading('Время события', text='Время события')
+
+        for log in log_table:
+            log_tree.insert('', 'end', values=log)
+
+        log_tree.pack()
+
+        save_log_as_btn = Button(sub_log_root, text='Сохранить', command=lambda: save_log_as(log_table))
+        save_log_as_btn.pack()
+
+        sub_log_root.mainloop()
+
+    log_root = Tk()
+    log_root.title('Журнал событий')
+    log_root.geometry('200x200')
+
+    log_label = Label(log_root, text='Выберите период')
+    log_label.pack()
+
+    btn_month = Button(log_root, text='За месяц', command=month_select)
+    btn_year = Button(log_root, text='За все время', command=year_select)
+    btn_month.pack()
+    btn_year.pack()
+
+    log_root.mainloop()
+
+
 def show_all_info():
     def save_as():
         file_name = fd.asksaveasfilename(filetypes=(("EXCEL files", "*.xlsx"),
@@ -924,5 +1079,8 @@ btn_send.pack()
 
 btn_all_users = Button(text='Информация о всех пользователях', command=show_all_info)
 btn_all_users.pack()
+
+btn_show_log = Button(text='Просмотр журнала', command=btn_show_log)
+btn_show_log.pack()
 
 root.mainloop()

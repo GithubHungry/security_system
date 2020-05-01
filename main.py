@@ -27,11 +27,13 @@ finally:
 
 def show_graphic_1():
     line_graph_root = Tk()
-    line_graph_root.wm_title('Title')
+    line_graph_root.wm_title('Количество посетителей за месяц')
+    line_graph_root["bg"] = "#c9d0a4"
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.set(xlim=[0, 31], ylim=[0, 100], title='Количество посетителей', xlabel='Дни', ylabel='Количество посетителей')
+    ax.set(xlim=[0, 31], ylim=[0, 100], title='Количество посетителей за месяц', xlabel='Время, дни',
+           ylabel='Количество посетителей, чел')
     ax.plot(
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
          31],
@@ -68,6 +70,7 @@ def show_diagram_2():
 
     diagram_root = Tk()
     diagram_root.wm_title('Нагрузка на точки входа')
+    diagram_root["bg"] = "#c9d0a4"
 
     nums = []
 
@@ -147,6 +150,11 @@ def btn_show_log():
         sub_log_root = Tk()
         sub_log_root.title('Журнал событий')
         sub_log_root.geometry('1000x500')
+        sub_log_root["bg"] = "#c9d0a4"
+
+        style = ttk.Style(sub_log_root)
+        style.theme_use("clam")
+        style.configure("Treeview", background='#f0dab5')
 
         log_table = []
         log_table_connection = myconnutils.get_connection()
@@ -181,8 +189,9 @@ def btn_show_log():
 
         log_tree.pack()
 
-        save_log_as_btn = Button(sub_log_root, text='Сохранить', command=lambda: save_log_as(log_table))
-        save_log_as_btn.pack()
+        save_log_as_btn = Button(sub_log_root, text='Сохранить', command=lambda: save_log_as(log_table),
+                                 font='Times 14', width=25, height=2, bg='#e8ddaf', foreground='#817162')
+        save_log_as_btn.place(x=370, y=435)
 
         sub_log_root.mainloop()
 
@@ -196,6 +205,11 @@ def btn_show_log():
         sub_log_root = Tk()
         sub_log_root.title('Журнал событий')
         sub_log_root.geometry('1000x500')
+        sub_log_root["bg"] = "#c9d0a4"
+
+        style = ttk.Style(sub_log_root)
+        style.theme_use("clam")
+        style.configure("Treeview", background='#f0dab5')
 
         log_table = []
         log_table_connection = myconnutils.get_connection()
@@ -230,22 +244,26 @@ def btn_show_log():
 
         log_tree.pack()
 
-        save_log_as_btn = Button(sub_log_root, text='Сохранить', command=lambda: save_log_as(log_table))
-        save_log_as_btn.pack()
+        save_log_as_btn = Button(sub_log_root, text='Сохранить', command=lambda: save_log_as(log_table),
+                                 font='Times 14', width=25, height=2, bg='#e8ddaf', foreground='#817162')
+        save_log_as_btn.place(x=370, y=435)
 
         sub_log_root.mainloop()
 
     log_root = Tk()
     log_root.title('Журнал событий')
-    log_root.geometry('200x200')
+    log_root.geometry('300x200')
+    log_root["bg"] = "#c9d0a4"
 
-    log_label = Label(log_root, text='Выберите период')
+    log_label = Label(log_root, text='Выберите период', font='Times 14', width=35, height=2, bg="#c9d0a4")
     log_label.pack()
 
-    btn_month = Button(log_root, text='За месяц', command=month_select)
-    btn_year = Button(log_root, text='За все время', command=year_select)
+    btn_month = Button(log_root, text='За месяц', command=month_select, font='Times 14', width=25, height=2,
+                       bg='#e8ddaf', foreground='#817162')
+    btn_year = Button(log_root, text='За все время', command=year_select, font='Times 14', width=25, height=2,
+                      bg='#e8ddaf', foreground='#817162')
     btn_month.pack()
-    btn_year.pack()
+    btn_year.place(x=20, y=120)
 
     log_root.mainloop()
 
@@ -334,14 +352,19 @@ def show_all_info():
 
     all_root = Tk()
     all_root.title("Все пользователи")
-    all_root.geometry("1600x400")
+    all_root.geometry("1650x400")
+    all_root["bg"] = "#c9d0a4"
+
+    style = ttk.Style(all_root)
+    style.theme_use("clam")
+    style.configure("Treeview", background='#f0dab5')
 
     tree = ttk.Treeview(all_root, columns=('ФИО', 'Телефон', 'Email', 'Дата рождения', 'UUiD',
                                            'Статус',
                                            'Коэффициент пунктуальности', 'Отдел', 'Базовая з/п'
                                            , 'Должность', 'Надбавка за должность', 'Дата принятия на работу',),
-
                         height=15, show='headings')
+
     tree.column('ФИО', width=200, anchor=CENTER)
     tree.column('Телефон', width=100, anchor=CENTER)
     tree.column('Email', width=170, anchor=CENTER)
@@ -372,8 +395,9 @@ def show_all_info():
         tree.insert('', 'end', values=employee_one)
 
     tree.pack()
-    save_as_btn = Button(all_root, text='Сохранить', command=save_as)
-    save_as_btn.pack()
+    save_as_btn = Button(all_root, text='Сохранить', command=save_as, font='Times 14', width=35, height=2, bg='#e8ddaf',
+                         foreground='#817162')
+    save_as_btn.place(x=620, y=335)
 
     all_root.mainloop()
 
@@ -384,10 +408,13 @@ def show_info():
 
             user_info_error_root = Tk()
             user_info_error_root.title('Ошибка пользователя')
-            user_info_error_root.geometry('350x150')
+            user_info_error_root.geometry('400x135')
+            user_info_error_root["bg"] = "#c9d0a4"
 
-            find_info_label = Label(user_info_error_root, text='Пользователя с данным именем не существует!')
-            find_info_btn = Button(user_info_error_root, text='OK', command=user_info_error_root.destroy)
+            find_info_label = Label(user_info_error_root, text='Пользователя с данным именем не существует!',
+                                    font='Times 14', width=40, height=2, bg="#c9d0a4")
+            find_info_btn = Button(user_info_error_root, text='OK', command=user_info_error_root.destroy,
+                                   font='Times 14', width=30, height=2, bg='#e8ddaf', foreground='#817162')
             find_info_label.pack()
             find_info_btn.pack()
 
@@ -430,7 +457,8 @@ def show_info():
                     line_graph_connection.close()
 
                 line_graph_root = Tk()
-                line_graph_root.wm_title('Title')
+                line_graph_root.wm_title('Отработка часов за месяц')
+                line_graph_root["bg"] = "#c9d0a4"
 
                 x = np.arange(1, 31)
                 y = np.random.randint(6, 10, size=30)
@@ -438,6 +466,8 @@ def show_info():
                 fig, ax = plt.subplots()
 
                 ax.bar(x, y)
+                ax.set(title='Отработка часов за месяц', xlabel='Время, дни',
+                       ylabel='Время, ч')
 
                 ax.set_facecolor('seashell')
                 fig.set_facecolor('floralwhite')
@@ -546,50 +576,55 @@ def show_info():
             show_info_entry.forget()
             show_info_btn.forget()
 
-            info_user_fio_label = Label(user_info_root, text='ФИО')
+            info_user_fio_label = Label(user_info_root, text='ФИО', font='Times 14', width=40, height=2, bg="#c9d0a4")
             info_user_fio_label.pack()
 
-            info_user_fio_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_fio_entry = Entry(user_info_root, justify=CENTER, width=40, font='Times 14', bg="#c9d0a4")
             info_user_fio_entry.insert(0, current_employee_info[0])
             info_user_fio_entry.config(state=DISABLED)
             info_user_fio_entry.pack()
 
-            info_user_phone_label = Label(user_info_root, text='Телефон')
+            info_user_phone_label = Label(user_info_root, text='Телефон', font='Times 14', width=40, height=2,
+                                          bg="#c9d0a4")
             info_user_phone_label.pack()
 
-            info_user_phone_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_phone_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             info_user_phone_entry.insert(0, current_employee_info[1])
             info_user_phone_entry.config(state=DISABLED)
             info_user_phone_entry.pack()
 
-            info_user_email_label = Label(user_info_root, text='Email')
+            info_user_email_label = Label(user_info_root, text='Email', font='Times 14', width=40, height=2,
+                                          bg="#c9d0a4")
             info_user_email_label.pack()
 
-            info_user_email_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_email_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             info_user_email_entry.insert(0, current_employee_info[2])
             info_user_email_entry.config(state=DISABLED)
             info_user_email_entry.pack()
 
-            info_user_date_of_birth_label = Label(user_info_root, text='Дата рождения')
+            info_user_date_of_birth_label = Label(user_info_root, text='Дата рождения', font='Times 14', width=40,
+                                                  height=2, bg="#c9d0a4")
             info_user_date_of_birth_label.pack()
 
-            info_user_date_of_birth_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_date_of_birth_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40,
+                                                  bg="#c9d0a4")
             info_user_date_of_birth_entry.insert(0, current_employee_info[3])
             info_user_date_of_birth_entry.config(state=DISABLED)
             info_user_date_of_birth_entry.pack()
 
-            info_user_uuid_label = Label(user_info_root, text='UUiD')
+            info_user_uuid_label = Label(user_info_root, text='UUiD', font='Times 14', width=40, height=2, bg="#c9d0a4")
             info_user_uuid_label.pack()
 
-            info_user_uuid_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_uuid_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             info_user_uuid_entry.insert(0, current_employee_info[4])
             info_user_uuid_entry.config(state=DISABLED)
             info_user_uuid_entry.pack()
 
-            info_user_entry_check_label = Label(user_info_root, text='Статус нахождения на объекте в данный момент')
+            info_user_entry_check_label = Label(user_info_root, text='Статус нахождения на объекте в данный момент',
+                                                font='Times 14', width=40, height=2, bg="#c9d0a4")
             info_user_entry_check_label.pack()
 
-            info_user_entry_check_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_entry_check_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             if current_employee_info[5] == 0:
                 info_user_entry_check_entry.insert(0, 'Отсутствует')
             else:
@@ -597,71 +632,84 @@ def show_info():
             info_user_entry_check_entry.config(state=DISABLED)
             info_user_entry_check_entry.pack()
 
-            info_user_late_odd_label = Label(user_info_root, text='Коэффициент пунктуальности')
+            info_user_late_odd_label = Label(user_info_root, text='Коэффициент пунктуальности', font='Times 14',
+                                             width=40, height=2, bg="#c9d0a4")
             info_user_late_odd_label.pack()
 
-            info_user_late_odd_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_late_odd_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             info_user_late_odd_entry.insert(0, current_employee_info[7])
             info_user_late_odd_entry.config(state=DISABLED)
             info_user_late_odd_entry.pack()
 
-            info_user_department_name_label = Label(user_info_root, text='Отдел')
+            info_user_department_name_label = Label(user_info_root, text='Отдел', font='Times 14', width=40, height=2,
+                                                    bg="#c9d0a4")
             info_user_department_name_label.pack()
 
-            info_user_department_name_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_department_name_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40,
+                                                    bg="#c9d0a4")
             info_user_department_name_entry.insert(0, current_employee_info[8])
             info_user_department_name_entry.config(state=DISABLED)
             info_user_department_name_entry.pack()
 
-            info_user_department_salary_label = Label(user_info_root, text='Базовая заработная плата по отделу')
+            info_user_department_salary_label = Label(user_info_root, text='Базовая заработная плата по отделу',
+                                                      font='Times 14', width=40, height=2, bg="#c9d0a4")
             info_user_department_salary_label.pack()
 
-            info_user_department_salary_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_department_salary_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40,
+                                                      bg="#c9d0a4")
             info_user_department_salary_entry.insert(0, current_employee_info[9])
             info_user_department_salary_entry.config(state=DISABLED)
             info_user_department_salary_entry.pack()
 
-            info_user_odd_name_label = Label(user_info_root, text='Должность')
+            info_user_odd_name_label = Label(user_info_root, text='Должность', font='Times 14', width=40, height=2,
+                                             bg="#c9d0a4")
             info_user_odd_name_label.pack()
 
-            info_user_odd_name_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_odd_name_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             info_user_odd_name_entry.insert(0, current_employee_info[10])
             info_user_odd_name_entry.config(state=DISABLED)
             info_user_odd_name_entry.pack()
 
-            info_user_odd_value_label = Label(user_info_root, text='Надбавка за должность')
+            info_user_odd_value_label = Label(user_info_root, text='Надбавка за должность', font='Times 14', width=40,
+                                              height=2, bg="#c9d0a4")
             info_user_odd_value_label.pack()
 
-            info_user_odd_value_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_odd_value_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             info_user_odd_value_entry.insert(0, current_employee_info[11])
             info_user_odd_value_entry.config(state=DISABLED)
             info_user_odd_value_entry.pack()
 
-            info_user_reg_date_label = Label(user_info_root, text='Дата принятия на работу')
+            info_user_reg_date_label = Label(user_info_root, text='Дата принятия на работу', font='Times 14', width=40,
+                                             height=2, bg="#c9d0a4")
             info_user_reg_date_label.pack()
 
-            info_user_reg_date_entry = Entry(user_info_root, justify=CENTER, width=40)
+            info_user_reg_date_entry = Entry(user_info_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             info_user_reg_date_entry.insert(0, current_employee_info[6])
             info_user_reg_date_entry.config(state=DISABLED)
             info_user_reg_date_entry.pack()
 
-            info_user_save_btn = Button(user_info_root, text='Сохранить', command=save_file)
-            info_user_save_btn.pack()
+            info_user_save_btn = Button(user_info_root, text='Сохранить', command=save_file, font='Times 14', width=35,
+                                        height=1, bg='#e8ddaf', foreground='#817162')
+            info_user_save_btn.place(x=70, y=890)
 
-            info_graphic_user_btn = Button(user_info_root, text='График посещения', command=show_graphic_1)
-            info_graphic_user_btn.pack()
+            info_graphic_user_btn = Button(user_info_root, text='График посещения', command=show_graphic_1,
+                                           font='Times 14', width=35, height=1, bg='#e8ddaf', foreground='#817162')
+            info_graphic_user_btn.place(x=70, y=940)
 
     user_info_root = Tk()
     user_info_root.title('Информация о пользователе')
-    user_info_root.geometry('500x700')
+    user_info_root.geometry('500x1000')
+    user_info_root["bg"] = "#c9d0a4"
 
-    show_info_label = Label(user_info_root, text='Введите ФИО пользователя')
-    show_info_entry = Entry(user_info_root)
-    show_info_btn = Button(user_info_root, text='Поиск пользователя', command=user_request)
+    show_info_label = Label(user_info_root, text='Введите ФИО пользователя', font='Times 14', width=40, height=2,
+                            bg="#c9d0a4")
+    show_info_entry = Entry(user_info_root, font='Times 14', width=40, bg="#c9d0a4")
+    show_info_btn = Button(user_info_root, text='Поиск пользователя', command=user_request, font='Times 14', width=30,
+                           height=2, bg='#e8ddaf', foreground='#817162')
 
     show_info_label.pack()
     show_info_entry.pack()
-    show_info_btn.pack()
+    show_info_btn.place(x=100, y=100)
 
     user_info_root.mainloop()
 
@@ -701,7 +749,6 @@ def user_update():
                 connec.commit()
                 messagebox.showinfo("Успех!", message='Пользователь успешно обновлен!')
             except:
-                print('something wrong')
                 connec.rollback()
             finally:
 
@@ -713,10 +760,13 @@ def user_update():
         if user_fio == '' or user_fio not in users_all_name:
             sub_sub_root = Tk()
             sub_sub_root.title('Ошибка пользователя')
-            sub_sub_root.geometry('350x150')
+            sub_sub_root.geometry('600x120')
+            sub_sub_root["bg"] = "#c9d0a4"
 
-            up_label = Label(sub_sub_root, text='Пользователя с именем {0} не существует!'.format(user_fio))
-            up_btn = Button(sub_sub_root, text='OK', command=sub_sub_root.destroy)
+            up_label = Label(sub_sub_root, text='Пользователя с именем {0} не существует!'.format(user_fio),
+                             font='Times 14', width=60, height=2, bg="#c9d0a4")
+            up_btn = Button(sub_sub_root, text='OK', command=sub_sub_root.destroy, font='Times 14', width=30, height=2,
+                            bg='#e8ddaf', foreground='#817162')
             up_label.pack()
             up_btn.pack()
 
@@ -724,8 +774,9 @@ def user_update():
         else:
             sub_sub_root = Tk()
             sub_sub_root.title('Изменение пользователя: {}'.format(user_fio))
-            sub_sub_root.geometry('500x700')
+            sub_sub_root.geometry('500x900')
             employee_info = ''
+            sub_sub_root["bg"] = "#c9d0a4"
 
             connection = myconnutils.get_connection()
             sql = "Select * from diploma.employee where employee.fio='{}';".format(update_entry.get())
@@ -750,40 +801,47 @@ def user_update():
                 # Закрыть соединение (Close connection).
                 connection.close()
 
-            up_fio_label = Label(sub_sub_root, text='Новое ФИО')
-            up_fio_entry = Entry(sub_sub_root, justify=CENTER)
+            up_fio_label = Label(sub_sub_root, text='Новое ФИО', font='Times 14', width=40, height=2, bg="#c9d0a4")
+            up_fio_entry = Entry(sub_sub_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             up_fio_entry.insert(0, employee_info[1])
 
-            up_phone_label = Label(sub_sub_root, text='Новый Телефон')
-            up_phone_entry = Entry(sub_sub_root, justify=CENTER)
+            up_phone_label = Label(sub_sub_root, text='Новый Телефон', font='Times 14', width=40, height=2,
+                                   bg="#c9d0a4")
+            up_phone_entry = Entry(sub_sub_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             up_phone_entry.insert(0, employee_info[2])
 
-            up_email_label = Label(sub_sub_root, text='Новый Email')
-            up_email_entry = Entry(sub_sub_root, justify=CENTER)
+            up_email_label = Label(sub_sub_root, text='Новый Email', font='Times 14', width=40, height=2, bg="#c9d0a4")
+            up_email_entry = Entry(sub_sub_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             up_email_entry.insert(0, employee_info[3])
 
-            up_date_of_birth_label = Label(sub_sub_root, text='Новая Дата рождения')
-            up_date_of_birth_entry = Entry(sub_sub_root, justify=CENTER)
+            up_date_of_birth_label = Label(sub_sub_root, text='Новая Дата рождения', font='Times 14', width=40,
+                                           height=2, bg="#c9d0a4")
+            up_date_of_birth_entry = Entry(sub_sub_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             up_date_of_birth_entry.insert(0, employee_info[4])
 
-            up_uuid_label = Label(sub_sub_root, text='UUiD')
-            up_uuid_entry = Entry(sub_sub_root, justify=CENTER)
+            up_uuid_label = Label(sub_sub_root, text='UUiD', font='Times 14', width=40, height=2, bg="#c9d0a4")
+            up_uuid_entry = Entry(sub_sub_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             up_uuid_entry.insert(0, employee_info[5])
 
-            up_department_label = Label(sub_sub_root, text='Отдел')
-            up_departments_listbox = Listbox(sub_sub_root, width=40, selectbackground='#228B22', exportselection=0)
+            up_department_label = Label(sub_sub_root, text='Отдел', font='Times 14', width=40, height=2, bg="#c9d0a4")
+            up_departments_listbox = Listbox(sub_sub_root, width=40, background='#f0dab5', selectbackground='#ab9379',
+                                             exportselection=0,
+                                             font='Times 14', height=11)
             scrollbar = Scrollbar(sub_sub_root, command=up_departments_listbox.yview)
             scrollbar.pack(side=RIGHT, fill=Y)
             up_departments_listbox.config(yscrollcommand=scrollbar.set)
             for department in departments_list:
                 up_departments_listbox.insert(END, department)
 
-            up_odd_label = Label(sub_sub_root, text='Коэффициент должности')
-            up_odds_listbox = Listbox(sub_sub_root, width=40, selectbackground='#228B22')
+            up_odd_label = Label(sub_sub_root, text='Коэффициент должности', font='Times 14', width=40, height=2,
+                                 bg="#c9d0a4")
+            up_odds_listbox = Listbox(sub_sub_root, width=40, background='#f0dab5', selectbackground='#ab9379',
+                                      font='Times 14', height=4)
             for odd in odds_list:
                 up_odds_listbox.insert(END, odd)
 
-            up_btn_confirm = Button(sub_sub_root, text='Изменить пользователя', command=update_confirm)
+            up_btn_confirm = Button(sub_sub_root, text='Изменить пользователя', command=update_confirm, font='Times 14',
+                                    width=35, height=2, bg='#e8ddaf', foreground='#817162')
 
             up_fio_label.pack()
             up_fio_entry.pack()
@@ -807,7 +865,7 @@ def user_update():
             up_odd_label.pack()
             up_odds_listbox.pack()
 
-            up_btn_confirm.pack()
+            up_btn_confirm.place(x=60, y=820)
 
             sub_root.destroy()
             sub_sub_root.mainloop()
@@ -815,14 +873,16 @@ def user_update():
     sub_root = Tk()
     sub_root.title('Изменение существующего пользователя')
     sub_root.geometry('250x150')
+    sub_root["bg"] = "#c9d0a4"
 
-    update_label = Label(sub_root, text='Введите ФИО пользователя')
-    update_entry = Entry(sub_root)
-    update_btn = Button(sub_root, text='Поиск пользователя', command=update_userprofile)
+    update_label = Label(sub_root, text='Введите ФИО пользователя', font='Times 14', width=40, height=2, bg="#c9d0a4")
+    update_entry = Entry(sub_root, width=40, font='Times 14', bg="#c9d0a4")
+    update_btn = Button(sub_root, text='Поиск пользователя', command=update_userprofile, font='Times 14', height=2,
+                        bg='#e8ddaf', foreground='#817162')
 
     update_label.pack()
     update_entry.pack()
-    update_btn.pack()
+    update_btn.place(x=40, y=80)
 
     sub_root.mainloop()
 
@@ -862,7 +922,6 @@ def user_create():
             conn.commit()
             messagebox.showinfo("Успех!", message='Пользователь успешно создан!')
         except:
-            print('something wrong')
             conn.rollback()
         finally:
             conn.close()
@@ -870,37 +929,41 @@ def user_create():
 
     sub_root = Tk()
     sub_root.title('Создание новго пользователя')
-    sub_root.geometry('500x700')
+    sub_root.geometry('500x900')
+    sub_root["bg"] = "#c9d0a4"
 
-    label_fio = Label(sub_root, text='Фамилия имя отчество')
-    entry_fio = Entry(sub_root, justify=CENTER)
+    label_fio = Label(sub_root, text='Фамилия имя отчество', font='Times 14', width=40, height=2, bg="#c9d0a4")
+    entry_fio = Entry(sub_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
 
-    label_phone = Label(sub_root, text='Телефон')
-    entry_phone = Entry(sub_root, justify=CENTER)
+    label_phone = Label(sub_root, text='Телефон', font='Times 14', width=40, height=2, bg="#c9d0a4")
+    entry_phone = Entry(sub_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
 
-    label_email = Label(sub_root, text='Email')
-    entry_email = Entry(sub_root, justify=CENTER)
+    label_email = Label(sub_root, text='Email', font='Times 14', width=40, height=2, bg="#c9d0a4")
+    entry_email = Entry(sub_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
 
-    label_date_of_birth = Label(sub_root, text='Дата рождения')
-    entry_date_of_birth = Entry(sub_root, justify=CENTER)
+    label_date_of_birth = Label(sub_root, text='Дата рождения', font='Times 14', width=40, height=2, bg="#c9d0a4")
+    entry_date_of_birth = Entry(sub_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
 
-    label_uuid = Label(sub_root, text='UUiD')
-    entry_uuid = Entry(sub_root, justify=CENTER)
+    label_uuid = Label(sub_root, text='UUiD', font='Times 14', width=40, height=2, bg="#c9d0a4")
+    entry_uuid = Entry(sub_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
 
-    label_department = Label(sub_root, text='Отдел')
-    departments_listbox = Listbox(sub_root, width=40, selectbackground='#228B22', exportselection=0)
+    label_department = Label(sub_root, text='Отдел', font='Times 14', width=40, height=2, bg="#c9d0a4")
+    departments_listbox = Listbox(sub_root, width=40, selectbackground='#ab9379', exportselection=0, font='Times 14',
+                                  height=11, background='#f0dab5')
     scrollbar = Scrollbar(sub_root, command=departments_listbox.yview)
     scrollbar.pack(side=RIGHT, fill=Y)
     departments_listbox.config(yscrollcommand=scrollbar.set)
     for department in departments_list:
         departments_listbox.insert(END, department)
 
-    label_odd = Label(sub_root, text='Коэффициент должности')
-    odds_listbox = Listbox(sub_root, width=40, selectbackground='#228B22')
+    label_odd = Label(sub_root, text='Коэффициент должности', font='Times 14', width=40, height=2, bg="#c9d0a4")
+    odds_listbox = Listbox(sub_root, width=40, font='Times 14', height=4, background='#f0dab5',
+                           selectbackground='#ab9379')
     for odd in odds_list:
         odds_listbox.insert(END, odd)
 
-    btn_accept_create = Button(sub_root, text='Создать', command=accept_create)
+    btn_accept_create = Button(sub_root, text='Создать', command=accept_create, font='Times 14', width=35, height=2,
+                               bg='#e8ddaf', foreground='#817162')
 
     label_fio.pack()
     entry_fio.pack()
@@ -924,7 +987,7 @@ def user_create():
     label_odd.pack()
     odds_listbox.pack()
 
-    btn_accept_create.pack()
+    btn_accept_create.place(x=60, y=820)
 
     sub_root.mainloop()
 
@@ -933,6 +996,7 @@ def user_auth():
     sub_auth_root = Tk()
     sub_auth_root.title('Аутенитификация пользователя')
     sub_auth_root.geometry('500x500')
+    sub_auth_root["bg"] = "#c9d0a4"
 
     users = []
     points = []
@@ -964,7 +1028,8 @@ def user_auth():
     variable = StringVar(sub_auth_root)
     variable.set(users[-1])  # default value
 
-    fio_label = Label(sub_auth_root, text='Выберите пропуск который хотите приложить')
+    fio_label = Label(sub_auth_root, text='Выберите пропуск который хотите приложить', font='Times 14', width=40,
+                      height=2, bg="#c9d0a4")
     fio_label.pack()
 
     def setter_auth(selection):
@@ -973,51 +1038,59 @@ def user_auth():
     w = OptionMenu(*(sub_auth_root, variable) + tuple(users, ), command=setter_auth)
     w.pack()
 
+    w.config(bg='#c9d0a4', font='Times 14', activebackground='#c9d0a4')
+
     def submit():
         btn_submit.pack_forget()
         w.pack_forget()
 
-        sub_entry = Entry(sub_auth_root, justify=CENTER, width=35)
+        sub_entry = Entry(sub_auth_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
         sub_entry.insert(0, variable.get())
         sub_entry.config(state=DISABLED)
         sub_entry.pack()
 
-        label_uuid_auth = Label(sub_auth_root, text='UUiD')
+        label_uuid_auth = Label(sub_auth_root, text='UUiD', font='Times 14', width=40, bg="#c9d0a4")
         label_uuid_auth.pack()
         if variable.get() == '-----':
-            entry_uuid_auth = Entry(sub_auth_root, justify=CENTER, width=35)
+            entry_uuid_auth = Entry(sub_auth_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             entry_uuid_auth.insert(0, 'Введите UUiD')
             entry_uuid_auth.pack()
         else:
-            entry_uuid_auth = Entry(sub_auth_root, justify=CENTER, width=35)
+            entry_uuid_auth = Entry(sub_auth_root, justify=CENTER, font='Times 14', width=40, bg="#c9d0a4")
             for tup in users_uuids:
                 if tup[0] == variable.get():
                     entry_uuid_auth.insert(0, tup[1])
                     entry_uuid_auth.config(state=DISABLED)
                     entry_uuid_auth.pack()
 
-        point_label = Label(sub_auth_root, text='Выберите точку прохода')
+        point_label = Label(sub_auth_root, text='Выберите точку прохода', font='Times 14', width=28, height=2,
+                            bg="#c9d0a4")
         point_label.pack()
 
         door = IntVar(sub_auth_root)
         door.set(1)
 
-        door_one_radio = Radiobutton(sub_auth_root, text=points[0], variable=door, value=1)
+        door_one_radio = Radiobutton(sub_auth_root, text=points[0], variable=door, value=1, font='Times 14', width=28,
+                                     height=2, bg="#c9d0a4")
         door_one_radio.pack()
 
-        door_two_radio = Radiobutton(sub_auth_root, text=points[1], variable=door, value=2)
+        door_two_radio = Radiobutton(sub_auth_root, text=points[1], variable=door, value=2, font='Times 14', width=28,
+                                     height=2, bg="#c9d0a4")
         door_two_radio.pack()
 
-        enter_label = Label(sub_auth_root, text='Выберите тип прохода')
+        enter_label = Label(sub_auth_root, text='Выберите тип прохода', font='Times 14', width=28, height=2,
+                            bg="#c9d0a4")
         enter_label.pack()
 
         enter = StringVar(sub_auth_root)
         enter.set('Вход ')
 
-        enter_one_radio = Radiobutton(sub_auth_root, text='Вход', variable=enter, value='Вход')
+        enter_one_radio = Radiobutton(sub_auth_root, text='Вход', variable=enter, value='Вход', font='Times 14',
+                                      width=28, height=2, bg="#c9d0a4")
         enter_one_radio.pack()
 
-        enter_two_radio = Radiobutton(sub_auth_root, text='Выход', variable=enter, value='Выход')
+        enter_two_radio = Radiobutton(sub_auth_root, text='Выход', variable=enter, value='Выход', font='Times 14',
+                                      width=28, height=2, bg="#c9d0a4")
         enter_two_radio.pack()
 
         def ok():
@@ -1163,10 +1236,12 @@ def user_auth():
                 email_send_back(error_text)
                 sub_auth_root.destroy()
 
-        button = Button(sub_auth_root, text="OK", command=ok)
+        button = Button(sub_auth_root, text="OK", command=ok, font='Times 14', width=28, height=2, bg='#e8ddaf',
+                        foreground='#817162')
         button.pack()
 
-    btn_submit = Button(sub_auth_root, text='Submit', command=submit)
+    btn_submit = Button(sub_auth_root, text='Submit', command=submit, font='Times 14', width=28, height=2, bg='#e8ddaf',
+                        foreground='#817162')
     btn_submit.pack()
 
     # test stuff
@@ -1176,30 +1251,39 @@ def user_auth():
 
 root = Tk()
 root.title("Безопасность будущего")
-root.geometry("300x500")
+root.geometry("350x590")
+root["bg"] = "#c9d0a4"
 
-btn_auth = Button(text='Аутентификация пользователя', command=user_auth)
-btn_auth.pack()
+btn_auth = Button(text='Аутентификация пользователя', command=user_auth, font='Times 14', width=28, height=2,
+                  bg='#e8ddaf', foreground='#817162')
+btn_auth.place(x=30, y=20)
 
-btn_create = Button(text='Создание нового пользователя', command=user_create)
-btn_create.pack()
+btn_create = Button(text='Создание нового пользователя', command=user_create, font='Times 14', width=28, height=2,
+                    bg='#e8ddaf', foreground='#817162')
+btn_create.place(x=30, y=90)
 
-btn_update = Button(text='Изменение данных пользователя', command=user_update)
-btn_update.pack()
+btn_update = Button(text='Изменение данных пользователя', command=user_update, font='Times 14', width=28, height=2,
+                    bg='#e8ddaf', foreground='#817162')
+btn_update.place(x=30, y=160)
 
-btn_send = Button(text='Информация о пользователе', command=show_info)
-btn_send.pack()
+btn_send = Button(text='Информация о пользователе', command=show_info, font='Times 14', width=28, height=2,
+                  bg='#e8ddaf', foreground='#817162')
+btn_send.place(x=30, y=230)
 
-btn_all_users = Button(text='Информация о всех пользователях', command=show_all_info)
-btn_all_users.pack()
+btn_all_users = Button(text='Информация о всех пользователях', command=show_all_info, font='Times 14', width=28,
+                       height=2, bg='#e8ddaf', foreground='#817162')
+btn_all_users.place(x=30, y=300)
 
-btn_show_log = Button(text='Просмотр журнала', command=btn_show_log)
-btn_show_log.pack()
+btn_show_log = Button(text='Просмотр журнала событий', command=btn_show_log, font='Times 14', width=28, height=2,
+                      bg='#e8ddaf', foreground='#817162')
+btn_show_log.place(x=30, y=370)
 
-btn_show_graphic_1 = Button(text='Show graphic 1', command=show_graphic_1)
-btn_show_graphic_1.pack()
+btn_show_graphic_1 = Button(text='График посещения', command=show_graphic_1, font='Times 14', width=28, height=2,
+                            bg='#e8ddaf', foreground='#817162')
+btn_show_graphic_1.place(x=30, y=440)
 
-btn_show_diagram_2 = Button(text='Show diagram 2', command=show_diagram_2)
-btn_show_diagram_2.pack()
+btn_show_diagram_2 = Button(text='Диаграмма использования точек', command=show_diagram_2, font='Times 14', width=28,
+                            height=2, bg='#e8ddaf', foreground='#817162')
+btn_show_diagram_2.place(x=30, y=510)
 
 root.mainloop()
